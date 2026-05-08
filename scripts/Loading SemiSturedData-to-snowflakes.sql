@@ -84,3 +84,161 @@ FROM EMPLOYEE_DATA_ARRAY;
 
 
 SELECT ARRAT_SIZE(EMPLOYEE_INFO) FROM EMPLOYEE_DATA_ARRAY;
+
+
+
+
+
+
+--Loading Json Data---
+
+CREATE OR REPLACE TABLE EMPLOYEE_DATA_JSON
+(
+EMPLOYEE_INFO VARIANT
+);
+
+COPY INTO EMPLOYEE_DATA_JSON FROM @AWS_ETL_JSON_STAGE
+FILE = ('employee_E105.json')
+
+SELECT * FROM EMPLOYEE_DATA_JSON;
+
+SELECT 
+    EMPLOYEE_INFO: employee_id,
+    EMPLOYEE_INFO: employee_name,
+    EMPLOYEE_INFO: position
+    
+FROM EMPLPOEE_DATA_JSON;
+
+SELECT 
+    EMPLOYEE_INFO: employee_id,
+    EMPLOYEE_INFO: employee_name,
+    EMPLOYEE_INFO: position,
+    EMPLOYEE_INFO: phone_numbers
+FROM EMPLPOEE_DATA_JSON;
+
+
+
+SELECT 
+    EMPLOYEE_INFO: employee_id,
+    EMPLOYEE_INFO: employee_name,
+    EMPLOYEE_INFO: position,
+    EMPLOYEE_INFO: phone_numbers[0],
+    EMPLOYEE_INFO: phone_numbers[1]
+FROM EMPLPOEE_DATA_JSON;
+
+
+SELECT 
+    EMPLOYEE_INFO: employee_id,
+    EMPLOYEE_INFO: employee_name,
+    EMPLOYEE_INFO: position,
+    EMPLOYEE_INFO: phone_numbers[0],
+    EMPLOYEE_INFO: phone_numbers[1],
+    EMPLOYEE_INFO: address
+FROM EMPLPOEE_DATA_JSON;
+
+
+SELECT 
+    EMPLOYEE_INFO: employee_id,
+    EMPLOYEE_INFO: employee_name,
+    EMPLOYEE_INFO: position,
+    EMPLOYEE_INFO: phone_numbers[0],
+    EMPLOYEE_INFO: phone_numbers[1],
+    EMPLOYEE_INFO: address.city,
+    EMPLOYEE_INFO: address.street,
+    EMPLOYEE_INFO: address.state,
+    EMPLOYEE_INFO: address.zip_code
+FROM EMPLPOEE_DATA_JSON;
+
+
+SELECT 
+    EMPLOYEE_INFO: employee_id,
+    EMPLOYEE_INFO: employee_name,
+    EMPLOYEE_INFO: position,
+    EMPLOYEE_INFO: phone_numbers[0],
+    EMPLOYEE_INFO: phone_numbers[1],
+    EMPLOYEE_INFO: address.city,
+    EMPLOYEE_INFO: address.street,
+    EMPLOYEE_INFO: address.state,
+    EMPLOYEE_INFO: address.zip_code,
+    EMPLOYEE_INFO: skills
+FROM EMPLPOEE_DATA_JSON;
+
+
+SELECT 
+    EMPLOYEE_INFO: employee_id,
+    EMPLOYEE_INFO: employee_name,
+    EMPLOYEE_INFO: position,
+    EMPLOYEE_INFO: phone_numbers[0],
+    EMPLOYEE_INFO: phone_numbers[1],
+    EMPLOYEE_INFO: address.city,
+    EMPLOYEE_INFO: address.street,
+    EMPLOYEE_INFO: address.state,
+    EMPLOYEE_INFO: address.zip_code,
+    EMPLOYEE_INFO: skills[0],
+    EMPLOYEE_INFO: skills[1],
+    EMPLOYEE_INFO: skills[2]
+    
+FROM EMPLPOEE_DATA_JSON;
+
+
+
+SELECT 
+    EMPLOYEE_INFO: employee_id,
+    EMPLOYEE_INFO: employee_name,
+    EMPLOYEE_INFO: position,
+    EMPLOYEE_INFO: phone_numbers[0],
+    EMPLOYEE_INFO: phone_numbers[1],
+    EMPLOYEE_INFO: address.city,
+    EMPLOYEE_INFO: address.street,
+    EMPLOYEE_INFO: address.state,
+    EMPLOYEE_INFO: address.zip_code,
+    EMPLOYEE_INFO: skills[0].skill_name,
+    EMPLOYEE_INFO: skills[0].proficiency_level,
+    EMPLOYEE_INFO: skills[1].skill_name,
+    EMPLOYEE_INFO: skills[1].proficiency_level,
+    EMPLOYEE_INFO: skills[2].skill_name,
+    EMPLOYEE_INFO: skills[2].proficiency_level
+    
+FROM EMPLPOEE_DATA_JSON;
+
+SELECT 
+    EMPLOYEE_INFO: employee_id :: STRING        AS EMPLOYEE_ID,
+    EMPLOYEE_INFO: employee_name :: STRING      AS EMPLOYEE_NAME,
+    EMPLOYEE_INFO: position :: STRING           AS POSITION,
+    EMPLOYEE_INFO: phone_numbers[0] :: STRING   AS PRIMARY_NUMBER,
+    EMPLOYEE_INFO: phone_numbers[1] :: STRING   AS SECONDARY_NUMBER,
+    EMPLOYEE_INFO: address.city :: STRING       AS CITY,
+    EMPLOYEE_INFO: address.street :: STRING     AS STREET_ADDRESS,
+    EMPLOYEE_INFO: address.state :: STRING      AS STATE,
+    EMPLOYEE_INFO: address.zip_code :: STRING   AS ZIP_CODE,
+    EMPLOYEE_INFO: skills[0].skill_name         AS SKILL_NAME_1,
+    EMPLOYEE_INFO: skills[0].proficiency_level  AS SKILL1_PROFICIENCY_LEVEL,
+    EMPLOYEE_INFO: skills[1].skill_name         AS SKILL_NAME_2,
+    EMPLOYEE_INFO: skills[1].proficiency_level  AS SKILL1_PROFICIENCY_LEVEL,
+    EMPLOYEE_INFO: skills[2].skill_name         AS SKILL_NAME_3,
+    EMPLOYEE_INFO: skills[2].proficiency_level  AS SKILL1_PROFICIENCY_LEVEL
+FROM EMPLPOEE_DATA_JSON;
+
+
+CREATE OR REPLACE TABLE JSON_EXTRACTED_EMPLOYEES
+AS 
+SELECT
+    EMPLOYEE_INFO: employee_id :: STRING        AS EMPLOYEE_ID,
+    EMPLOYEE_INFO: employee_name :: STRING      AS EMPLOYEE_NAME,
+    EMPLOYEE_INFO: position :: STRING           AS POSITION,
+    EMPLOYEE_INFO: phone_numbers[0] :: STRING   AS PRIMARY_NUMBER,
+    EMPLOYEE_INFO: phone_numbers[1] :: STRING   AS SECONDARY_NUMBER,
+    EMPLOYEE_INFO: address.city :: STRING       AS CITY,
+    EMPLOYEE_INFO: address.street :: STRING     AS STREET_ADDRESS,
+    EMPLOYEE_INFO: address.state :: STRING      AS STATE,
+    EMPLOYEE_INFO: address.zip_code :: STRING   AS ZIP_CODE,
+    EMPLOYEE_INFO: skills[0].skill_name         AS SKILL_NAME_1,
+    EMPLOYEE_INFO: skills[0].proficiency_level  AS SKILL1_PROFICIENCY_LEVEL,
+    EMPLOYEE_INFO: skills[1].skill_name         AS SKILL_NAME_2,
+    EMPLOYEE_INFO: skills[1].proficiency_level  AS SKILL1_PROFICIENCY_LEVEL,
+    EMPLOYEE_INFO: skills[2].skill_name         AS SKILL_NAME_3,
+    EMPLOYEE_INFO: skills[2].proficiency_level  AS SKILL1_PROFICIENCY_LEVEL
+FROM EMPLPOEE_DATA_JSON;
+
+
+SELECT * FROM JSON_EXTRACTED_EMPLOYEES;
