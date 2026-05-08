@@ -1,1 +1,55 @@
 
+USE HRMS;
+USE SCHEMA ETL;
+
+CREATE OR REPLACE FILE FORMATE HRMS.ETL.JSON_ETL_FILEFORMATE
+TYPE = JSON;
+
+CREATE OR REPLACE STAGE HRMS.ETL.AWS_ETL_JSON_STAGE
+STORAGE_INTEGRATION = AWS_S3_INT
+URL = 's3//learn2cloud-snowflakes/loadingdata/Json/'
+FILE_FORMATE = JSON_ETL_FILEFORMATE
+
+LIST @AWS_ETL_JSON_STAGE;
+
+--Loading object Data
+
+CREATE OR REPLACE TABLE EMPLPOEE_DATA_OBJECT
+(
+EMPLOYEE_INFO OBJECT
+);
+
+COPY INTO EMPLPOEE_DATA_OBJECT
+(
+FILES = ('employee_object.json')
+
+)
+SELECT * FROM EMPLPOEE_DATA_OBJECT;
+
+SELECT 
+    EMPLOYEE_INFO: employee_id,
+    EMPLOYEE_INFO: employee_name,
+    EMPLOYEE_INFO: position,
+    EMPLOYEE_INFO: address
+FROM EMPLPOEE_DATA_OBJECT
+
+SELECT 
+    EMPLOYEE_INFO: employee_id,
+    EMPLOYEE_INFO: employee_name,
+    EMPLOYEE_INFO: position,
+    EMPLOYEE_INFO: address.city,
+    EMPLOYEE_INFO: address.street,
+    EMPLOYEE_INFO: address.state,
+    EMPLOYEE_INFO: address.zip_code
+FROM EMPLPOEE_DATA_OBJECT
+
+
+SELECT 
+    EMPLOYEE_INFO: employee_id :: STRING  AS EMPLOYEE_ID,
+    EMPLOYEE_INFO: employee_name :: STRING  AS EMPLOYEE_NAME,
+    EMPLOYEE_INFO: position :: STRING       AS POSITION,
+    EMPLOYEE_INFO: address.city :: STRING   AS CITY,              --make it string
+    EMPLOYEE_INFO: address.street :: STRING AS STREET,
+    EMPLOYEE_INFO: address.state :: STRING  AS STATE,
+    EMPLOYEE_INFO: address.zip_code :: STRING AS ZIP_CODE
+FROM EMPLPOEE_DATA_OBJECT
