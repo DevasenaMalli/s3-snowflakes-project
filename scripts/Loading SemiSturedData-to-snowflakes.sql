@@ -242,3 +242,73 @@ FROM EMPLPOEE_DATA_JSON;
 
 
 SELECT * FROM JSON_EXTRACTED_EMPLOYEES;
+
+
+
+---Lateral Flatten----
+
+CREATE OR REPLACE TABLE EMPLOYEE_DATA_JSON_FLATTEN
+(
+EMPLOYEE_INFO VARIANT
+);
+
+COPY INTO EMPLOYEE_DATA_JSON_FLATTEN FROM @AWS_ETL_JSON_STAGE
+FILE = ('employee_E105.json')
+
+SELECT * FROM EMPLOYEE_DATA_JSON_FLATTEN;
+
+SELECT
+EMPLOYEE_INFO: employee_id :: STRING           AS EMPLOYEE_ID,
+EMPLOYEE_NAME: employee_name :: STRING         AS EMPLOYEE_NAME,
+EMPLOYEE_INFO: position :: STRING              AS JOB_TITLE
+
+FROM EMPLOYEE_DATA_JSON_FLATTEN;
+
+
+SELECT
+    EMPLOYEE_INFO: employee_id :: STRING           AS EMPLOYEE_ID,
+    EMPLOYEE_NAME: employee_name :: STRING         AS EMPLOYEE_NAME,
+    EMPLOYEE_INFO: position :: STRING              AS JOB_TITLE,
+    f.*
+
+FROM EMPLOYEE_DATA_JSON_FLATTEN, lateral flatten(EMPLOYEE_INFO:phone_numbers) f;
+
+
+
+SELECT
+    EMPLOYEE_INFO: employee_id :: STRING           AS EMPLOYEE_ID,
+    EMPLOYEE_NAME: employee_name :: STRING         AS EMPLOYEE_NAME,
+    EMPLOYEE_INFO: position :: STRING              AS JOB_TITLE,
+    fp.VALUE
+
+FROM EMPLOYEE_DATA_JSON_FLATTEN, lateral flatten(EMPLOYEE_INFO:phone_numbers) fp;
+
+SELECT
+    EMPLOYEE_INFO: employee_id :: STRING           AS EMPLOYEE_ID,
+    EMPLOYEE_NAME: employee_name :: STRING         AS EMPLOYEE_NAME,
+    EMPLOYEE_INFO: position :: STRING              AS JOB_TITLE,
+     fs.VALUE
+
+FROM EMPLOYEE_DATA_JSON_FLATTEN, lateral flatten(EMPLOYEE_INFO:skills) fs;
+
+
+SELECT
+    EMPLOYEE_INFO: employee_id :: STRING           AS EMPLOYEE_ID,
+    EMPLOYEE_NAME: employee_name :: STRING         AS EMPLOYEE_NAME,
+    EMPLOYEE_INFO: position :: STRING              AS JOB_TITLE,
+     fs.VALUE: proficiency_level                    AS proficiency_level,
+     fs.VALUE: skill_name                           AS skill_name
+
+FROM EMPLOYEE_DATA_JSON_FLATTEN, lateral flatten(EMPLOYEE_INFO:skills) fs;
+
+
+
+SELECT
+    EMPLOYEE_INFO: employee_id :: STRING           AS EMPLOYEE_ID,
+    EMPLOYEE_NAME: employee_name :: STRING         AS EMPLOYEE_NAME,
+    EMPLOYEE_INFO: position :: STRING              AS JOB_TITLE,                   ---We can flatten querry with multiple arrays
+     fs.VALUE: proficiency_level                    AS proficiency_level,
+     fs.VALUE: skill_name                           AS skill_name,
+     fp.VALUE
+
+FROM EMPLOYEE_DATA_JSON_FLATTEN, lateral flatten(EMPLOYEE_INFO:skills) fs, lateral flatten(EMPLOYEE_INFO:phone_numbers) fp;
